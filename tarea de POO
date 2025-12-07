@@ -1,0 +1,194 @@
+from abc import ABC, abstractmethod
+
+
+# Clase de ejemplo de abstraccion
+class Vehiculo(ABC):
+    """
+    Clase base abstracta para cualquier vehículo. Define un 'contrato'.
+    """
+
+    # Método abstracto (debe ser implementado por subclases)
+    @abstractmethod
+    def arrancar(self):
+        """Define la acción de arrancar un vehículo."""
+        pass
+
+    # Método concreto (con implementación por defecto)
+    def describir(self):
+        """Muestra información común a todos los vehículos."""
+        print("Este es un vehículo que puede arrancar.")
+
+
+# Clase Concreta que Implementa la Interfaz
+class Coche(Vehiculo):
+    """
+    Clase concreta que implementa el método arrancar de Vehiculo.
+    """
+
+    def __init__(self, marca):
+        self.marca = marca
+
+    # Implementación OBLIGATORIA del método abstracto
+    def arrancar(self):
+        print(f"El {self.marca} ha encendido el motor de combustión.")
+
+# Uso del ejemplo
+mi_coche = Coche("Toyota")
+mi_coche.describir()  # Llama al método concreto de la clase abstracta
+mi_coche.arrancar()  # Llama a la implementación específica
+
+
+
+
+
+
+class CuentaBancaria:
+    """
+    Representa una cuenta bancaria con saldo encapsulado.
+    """
+
+    def __init__(self, saldo_inicial):
+        # Atributo "privado" por convención (doble guion bajo)
+        self.__saldo = saldo_inicial
+
+    # Método para consultar el saldo (acceso controlado)
+    def consultar_saldo(self):
+        return f"Saldo actual: ${self.__saldo:.2f}"
+
+    # Método para depositar (modificación controlada)
+    def depositar(self, monto):
+        if monto > 0:
+            self.__saldo += monto
+            print(f"Depósito de ${monto:.2f} realizado.")
+        else:
+            print("Error: El monto del depósito debe ser positivo.")
+
+    # Método para retirar (modificación controlada con lógica de negocio)
+    def retirar(self, monto):
+        if monto > 0 and monto <= self.__saldo:
+            self.__saldo -= monto
+            print(f"Retiro de ${monto:.2f} realizado.")
+            return True
+        else:
+            print("Error: Fondos insuficientes o monto no válido.")
+            return False
+
+
+# Uso del ejemplo de encapsulacion
+mi_cuenta = CuentaBancaria(500.00)
+print(mi_cuenta.consultar_saldo())
+
+mi_cuenta.depositar(150.00)
+print(mi_cuenta.consultar_saldo())
+
+mi_cuenta.retirar(700.00)  # Falla por fondos insuficientes
+mi_cuenta.retirar(50.00)  # Retiro exitoso
+
+print(mi_cuenta.consultar_saldo())
+
+# Intento de acceso directo al atributo "privado" (desaconsejado y técnicamente complejo en Python)
+# Esto demuestra que la clase expone una interfaz (consultar/depositar/retirar) y no el dato directamente.
+# print(mi_cuenta.__saldo) # Esto resultaría en un error de atributo en Python
+
+
+
+
+
+
+
+
+# clase de herencia
+class Animal:
+    """
+    Clase base para cualquier animal.
+    """
+
+    def __init__(self, nombre, edad):
+        self.nombre = nombre
+        self.edad = edad
+
+    def comer(self):
+        print(f"{self.nombre} está comiendo.")
+
+    def dormir(self):
+        print(f"{self.nombre} está durmiendo.")
+
+
+# Subclase que hereda de Animal
+class Perro(Animal):
+    """
+    Clase Perro que hereda las propiedades y métodos de Animal.
+    """
+
+    def __init__(self, nombre, edad, raza):
+        # Llama al constructor de la clase base (Animal)
+        super().__init__(nombre, edad)
+        self.raza = raza
+
+    # Método propio de la subclase
+    def ladrar(self):
+        print(f"{self.nombre} ({self.raza}) está ladrando: ¡Guau! ¡Guau!")
+
+
+# Subclase que hereda de Animal
+class Gato(Animal):
+    """
+    Clase Gato que hereda de Animal y sobrescribe un método.
+    """
+
+    # Sobrescritura (Override) del método comer de la Superclase
+    def comer(self):
+        print(f"{self.nombre} está bebiendo leche y comiendo atún.")
+
+
+# Uso del ejemplo
+mi_perro = Perro("Fido", 5, "Labrador")
+mi_gato = Gato("Mishi", 2)
+
+# Métodos heredados:
+mi_perro.comer()  # Heredado de Animal
+mi_gato.dormir()  # Heredado de Animal
+
+# Método propio:
+mi_perro.ladrar()
+
+# Método sobrescrito:
+mi_gato.comer()  # Usa la implementación específica de Gato
+
+
+
+
+
+
+
+# uso de polimorfismo
+
+class Pato:
+    def sonido(self):
+        return "¡Cuac, cuac!"
+
+class Vaca:
+    def sonido(self):
+        return "¡Muuu!"
+
+class Persona:
+    # Tiene el mismo nombre de método (sonido) que las otras clases
+    def sonido(self):
+        return "¡Hola! ¿Cómo estás?"
+
+
+# Función polimórfica: acepta cualquier objeto que tenga un método 'sonido()'
+def hacer_sonido_general(entidad):
+    print(f"La entidad hace el siguiente sonido: {entidad.sonido()}")
+
+
+# ejemplo de polimorfismo
+mi_pato = Pato()
+mi_vaca = Vaca()
+mi_persona = Persona()
+
+animales = [mi_pato, mi_vaca, mi_persona]
+
+# Iteramos sobre la lista y llamamos al mismo método, pero cada objeto se comporta diferente
+for entidad in animales:
+    hacer_sonido_general(entidad)

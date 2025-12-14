@@ -1,0 +1,75 @@
+
+# EJERCICIO 2: PROGRAMACIÓN ORIENTADA A OBJETOS (POO)
+
+
+class ClimaSemanal:
+    """
+    Clase base para el registro y cálculo del clima semanal.
+    """
+    
+    DIAS_SEMANA = 7
+    
+    def __init__(self):
+        # Atributo privado/protegido para encapsular los datos
+        self.__temperaturas = [] 
+
+    def ingresar_temperaturas(self):
+        """Método de instancia para solicitar y almacenar las temperaturas."""
+        self.__temperaturas = []
+        print("\n*** INGRESO DE TEMPERATURAS (PROGRAMACIÓN ORIENTADA A OBJETOS) ***")
+        for i in range(self.DIAS_SEMANA):
+            while True:
+                try:
+                    temp = float(input(f"Ingrese la temperatura del Día {i + 1}: "))
+                    self.__temperaturas.append(temp)
+                    break
+                except ValueError:
+                    print("Error: Por favor, ingrese un número válido para la temperatura.")
+    
+    def obtener_temperaturas(self):
+        """Método para acceder a las temperaturas (encapsulamiento)."""
+        return self.__temperaturas
+
+    def calcular_promedio_semanal(self):
+        """Método de instancia para calcular el promedio."""
+        temps = self.__temperaturas 
+        if not temps:
+            return 0.0
+        
+        promedio = sum(temps) / len(temps)
+        return promedio
+
+class ReporteClima(ClimaSemanal):
+    """
+    Clase que hereda de ClimaSemanal y añade una funcionalidad de reporte.
+    """
+    def generar_reporte(self):
+        """Genera un reporte completo."""
+        promedio = self.calcular_promedio_semanal()
+        temperaturas = self.obtener_temperaturas()
+        
+        print("\n--- Reporte Semanal (POO) ---")
+        if temperaturas:
+            print(f"Días registrados: {self.DIAS_SEMANA}")
+            print(f"Temperaturas registradas: {temperaturas}")
+            print(f"El Promedio Semanal del Clima es: {promedio:.2f}°C")
+        else:
+            print("No se registraron datos para generar el reporte.")
+
+def ejecutar_programa_poo():
+    """
+    Función principal que orquesta el flujo de la POO.
+    """
+    print("\n--- INICIO: PROGRAMACIÓN ORIENTADA A OBJETOS ---")
+    
+    # 1. Creación del Objeto
+    mi_clima = ReporteClima()
+    
+    # 2. Entrada de datos a través del Objeto
+    mi_clima.ingresar_temperaturas()
+    
+    # 3. Cálculo y Salida de resultados a través del Objeto
+    mi_clima.generar_reporte()
+
+# Llamada para ejecutar el enfoque POO
+ejecutar_programa_poo()

@@ -1,0 +1,57 @@
+
+# EJERCICIO 1: PROGRAMACIÓN TRADICIONAL
+
+
+DIAS_SEMANA = 7
+
+def obtener_temperaturas_diarias(dias):
+    """
+    Función para solicitar al usuario la temperatura de 'dias' días.
+    Retorna: Una lista de temperaturas (float).
+    """
+    temperaturas = []
+    print("\n*** INGRESO DE TEMPERATURAS (PROGRAMACIÓN TRADICIONAL) ***")
+    for i in range(dias):
+        while True:
+            try:
+                temp = float(input(f"Ingrese la temperatura del Día {i + 1}: "))
+                temperaturas.append(temp)
+                break
+            except ValueError:
+                print("Error: Por favor, ingrese un número válido para la temperatura.")
+    return temperaturas
+
+def calcular_promedio_semanal(temperaturas):
+    """
+    Función para calcular el promedio de una lista de temperaturas.
+    Retorna: El promedio (float).
+    """
+    if not temperaturas:
+        return 0.0
+    
+    suma_temperaturas = sum(temperaturas)
+    promedio = suma_temperaturas / len(temperaturas)
+    return promedio
+
+def ejecutar_programa_tradicional():
+    """
+    Función principal que orquesta el flujo de la programación tradicional.
+    """
+    print("\n--- INICIO: PROGRAMACIÓN TRADICIONAL ---")
+    
+    # 1. Entrada de datos
+    temps = obtener_temperaturas_diarias(DIAS_SEMANA)
+    
+    # 2. Cálculo
+    promedio = calcular_promedio_semanal(temps)
+    
+    # 3. Salida de resultados
+    print("\n--- Resultados (Programación Tradicional) ---")
+    if temps:
+        print(f"Temperaturas registradas: {temps}")
+        print(f"El Promedio Semanal del Clima es: {promedio:.2f}°C")
+    else:
+        print("No se ingresaron temperaturas para calcular el promedio.")
+
+# Llamada para ejecutar el enfoque tradicional
+ejecutar_programa_tradicional()

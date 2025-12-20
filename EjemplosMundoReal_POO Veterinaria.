@@ -1,0 +1,60 @@
+clase de Mascota:
+    """Representa a un animal que asiste a la clínica."""
+    
+    def __init__(self, nombre, especie, edad):
+        # Atributos de instancia
+        self.nombre = nombre
+        self.especie = especie
+        self.edad = edad
+        self.salud = "Saludable"
+
+    def __str__(self):
+        return f"{self.nombre} ({self.especie}), Edad: {self.edad}, Estado: {self.salud}"
+
+    def enfermar(self):
+        self.salud = "Enfermo"
+        print(f"Oh no, {self.nombre} no se siente bien.")
+
+clase de Clinica:
+    """Representa el sistema de gestión de la veterinaria."""
+    
+    def __init__(self, nombre_clinica):
+        self.nombre_clinica = nombre_clinica
+        self.pacientes = []
+
+    def registrar_paciente(self, mascota):
+        self.pacientes.append(mascota)
+        print(f"Éxito: {mascota.nombre} ha sido registrado en {self.nombre_clinica}.")
+
+    def atender_pacientes(self):
+        print(f"\n--- Atendiendo pacientes en {self.nombre_clinica} ---")
+        for mascota in self.pacientes:
+            if mascota.salud == "Enfermo":
+                print(f"Tratando a {mascota.nombre}...")
+                mascota.salud = "Recuperado"
+            else:
+                print(f"{mascota.nombre} está en perfecto estado, solo revisión de rutina.")
+
+# --- Lógica de Interacción ---
+
+# 1. Creamos objetos (Instanciación)
+mi_perro = Mascota("Buddy", "Perro", 3)
+mi_gato = Mascota("Luna", "Gato", 5)
+
+# 2. Simulamos un cambio de estado
+mi_perro.enfermar()
+
+# 3. Creamos el objeto principal del sistema
+mi_veterinaria = Clinica("Veterinaria 'Patitas Felices'")
+
+# 4. Interacción entre objetos
+mi_veterinaria.registrar_paciente(mi_perro)
+mi_veterinaria.registrar_paciente(mi_gato)
+
+# 5. Ejecución de métodos del sistema
+mi_veterinaria.atender_pacientes()
+
+# 6. Verificación final de los objetos
+print("\nEstado actual de las mascotas:")
+print(mi_perro)
+print(mi_gato)

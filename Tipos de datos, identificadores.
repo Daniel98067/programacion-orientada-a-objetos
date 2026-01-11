@@ -1,0 +1,42 @@
+"""
+Programa: Calculador de Eficiencia y Costo de Viaje
+Funcionalidad: Calcula los litros de combustible necesarios para un viaje, 
+el costo total y determina si el presupuesto del usuario es suficiente.
+"""
+
+def calcular_resumen_viaje():
+    # --- Datos de entrada (Strings y Floats) ---
+    destino = input("Introduce el nombre del destino: ") # String
+    distancia_km = float(input(f"¿Cuántos kilómetros hay hasta {destino}?: ")) # Float
+    rendimiento_kpl = float(input("¿Cuál es el rendimiento del coche (km/litro)?: ")) # Float
+    precio_litro = float(input("¿Cuál es el precio actual por litro de combustible?: ")) # Float
+    presupuesto_disponible = float(input("¿Cuánto dinero tienes disponible para combustible?: ")) # Float
+
+    # --- Lógica de cálculo (Uso de operadores) ---
+    # Calculamos cuántos litros se necesitan
+    litros_necesarios = distancia_km / rendimiento_kpl
+    
+    # Calculamos el costo total (Casting a float implícito en la operación)
+    costo_total = litros_necesarios * precio_litro
+    
+    # Determinamos si el presupuesto alcanza (Boolean)
+    presupuesto_suficiente = presupuesto_disponible >= costo_total
+
+    # --- Salida de datos (Integer y Strings) ---
+    print("\n" + "="*30)
+    print(f"RESUMEN DEL VIAJE A: {destino.upper()}")
+    print(f"Distancia a recorrer: {int(distancia_km)} km") # Conversión a Integer para visualización limpia
+    print(f"Litros necesarios: {litros_necesarios:.2f} L")
+    print(f"Costo total estimado: ${costo_total:.2f}")
+    
+    # Condicional que utiliza el valor booleano
+    if presupuesto_suficiente:
+        print("Estado del presupuesto: ¡Suficiente para el viaje! ")
+    else:
+        faltante = costo_total - presupuesto_disponible
+        print(f"Estado del presupuesto: Insuficiente. Te faltan ${faltante:.2f} ")
+    print("="*30)
+
+# Llamada a la función principal
+if __name__ == "__main__":
+    calcular_resumen_viaje()

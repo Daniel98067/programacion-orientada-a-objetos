@@ -1,0 +1,58 @@
+# Definición de la Clase Base: Empleado (Demuestra Encapsulación)
+class Empleado:
+    def __init__(self, nombre, salario_base):
+        self.nombre = nombre
+        # Encapsulación: El atributo __salario es privado
+        self.__salario = salario_base 
+
+    def mostrar_informacion(self):
+        print(f"Empleado: {self.nombre}")
+
+    # Método para demostrar Polimorfismo (será sobrescrito)
+    def calcular_pago(self):
+        return self.__salario
+
+    # Getter para acceder al salario de forma controlada
+    def obtener_salario(self):
+        return self.__salario
+
+# Clase Derivada: Desarrollador (Demuestra Herencia)
+class Desarrollador(Empleado):
+    def __init__(self, nombre, salario_base, lenguaje):
+        # Herencia: Llamada al constructor de la clase base
+        super().__init__(nombre, salario_base)
+        self.lenguaje = lenguaje
+
+    # Polimorfismo: Sobrescribimos el método con un bono específico
+    def calcular_pago(self):
+        bono_especialidad = 500
+        return self.obtener_salario() + bono_especialidad
+
+    def mostrar_informacion(self):
+        print(f"Desarrollador: {self.nombre} | Especialidad: {self.lenguaje}")
+
+# Clase Derivada: Gerente (Demuestra Herencia)
+class Gerente(Empleado):
+    # Polimorfismo: Sobrescribimos el método con un bono de gestión
+    def calcular_pago(self):
+        bono_gestion = 1000
+        return self.obtener_salario() + bono_gestion
+
+    def mostrar_informacion(self):
+        print(f"Gerente: {self.nombre} | Cargo: Gestión de Proyectos")
+
+# --- Demostración de funcionalidad ---
+
+# Creación de Objetos (Instancias con los nombres solicitados)
+dev = Desarrollador("Daniel Arévalo", 2500, "Python")
+boss = Gerente("Jesús Vilema", 4000)
+
+# Lista de empleados para demostrar Polimorfismo en ejecución
+nomina_empleados = [dev, boss]
+
+print("--- Sistema de Gestión de Personal ---")
+for empleado in nomina_empleados:
+    # Se llama al método mostrar_informacion de cada clase
+    empleado.mostrar_informacion()
+    # Demostración de Polimorfismo: cada objeto calcula su pago de forma distinta
+    print(f"Total a pagar (con bonos): ${empleado.calcular_pago()}\n")

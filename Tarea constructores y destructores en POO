@@ -1,0 +1,48 @@
+class SimuladorRecurso:
+    """
+    Esta clase simula la conexión a una base de datos.
+    Ideal para entornos con restricciones de escritura de archivos.
+    """
+
+    def __init__(self, nombre_recurso):
+        """
+        CONSTRUCTOR: Se activa al crear el objeto.
+        Inicializa el estado del recurso.
+        """
+        self.nombre = nombre_recurso
+        self.conectado = True  # Simulamos que la conexión se abre con éxito
+        print(f"[*] CONSTRUCTOR: Conexión establecida con '{self.nombre}'.")
+
+    def enviar_datos(self, mensaje):
+        """Método para realizar operaciones si el recurso está activo."""
+        if self.conectado:
+            print(f"[+] OPERACIÓN: Enviando datos -> {mensaje}")
+        else:
+            print("[!] ERROR: No hay conexión activa.")
+
+    def __del__(self):
+        """
+        DESTRUCTOR: Se activa al eliminar el objeto o terminar el programa.
+        Simula el cierre de la conexión para liberar memoria.
+        """
+        # Verificamos si el atributo existe para evitar errores de limpieza
+        if hasattr(self, 'conectado'):
+            self.conectado = False
+            print(f"[-] DESTRUCTOR: Conexión con '{self.nombre}' cerrada de forma segura.")
+
+# --- PRUEBA DEL PROGRAMA ---
+
+print("--- INICIO DE LA TAREA ---")
+
+# 1. Creamos la instancia (Llamada automática al Constructor)
+mi_conexion = SimuladorRecurso("Servidor_Principal")
+
+# 2. Usamos el objeto
+mi_conexion.enviar_datos("Registro de usuario #101")
+mi_conexion.enviar_datos("Actualización de sistema")
+
+# 3. Finalizamos el objeto (Llamada automática al Destructor)
+print("Finalizando el uso del objeto...")
+del mi_conexion 
+
+print("--- FIN DE LA TAREA ---")

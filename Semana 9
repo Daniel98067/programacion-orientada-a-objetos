@@ -1,0 +1,154 @@
+
+# CLASE PRODUCTO: Representa la entidad básica
+
+class Producto:
+    def __init__(self, id_producto, nombre, cantidad, precio):
+        self._id = id_producto
+        self._nombre = nombre
+        self._cantidad = cantidad
+        self._precio = precio
+
+    # Getters y Setters (Encapsulamiento)
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def nombre(self):
+        return self._nombre
+    
+    @nombre.setter
+    def nombre(self, valor):
+        self._nombre = valor
+
+    @property
+    def cantidad(self):
+        return self._cantidad
+    
+    @cantidad.setter
+    def cantidad(self, valor):
+        self._cantidad = valor
+
+    @property
+    def precio(self):
+        return self._precio
+    
+    @precio.setter
+    def precio(self, valor):
+        self._precio = valor
+
+    def __str__(self):
+        return f"ID: {self._id:03d} | Nombre: {self._nombre:<15} | Stock: {self._cantidad:<5} | Precio: ${self._precio:.2f}"
+
+
+
+# CLASE INVENTARIO: Maneja la lógica de la lista
+
+class Inventario:
+    def __init__(self):
+        self.productos = []
+
+    def añadir_producto(self, id_p, nombre, cantidad, precio):
+        # Validación de ID único usando "any"
+        if any(p.id == id_p for p in self.productos):
+            print("\n ERROR: El ID ya existe. Intente con otro.")
+            return
+        
+        nuevo = Producto(id_p, nombre, cantidad, precio)
+        self.productos.append(nuevo)
+        print("\n Producto añadido correctamente.")
+
+    def mostrar_todo(self):
+        if not self.productos:
+            print("\n El inventario está vacío.")
+        else:
+            print("\n" + "="*50)
+            print(f"{'INVENTARIO ACTUAL':^50}")
+            print("="*50)
+            for p in self.productos:
+                print(p)
+            print("="*50)
+
+    def actualizar_producto(self, id_p):
+        for p in self.productos:
+            if p.id == id_p:
+                print(f"Editando: {p.nombre}")
+                nueva_cant = input("Nueva cantidad (Enter para omitir): ")
+                nuevo_pre = input("Nuevo precio (Enter para omitir): ")
+                
+                if nueva_cant: p.cantidad = int(nueva_cant)
+                if nuevo_pre: p.precio = float(nuevo_pre)
+                print(" Producto actualizado.")
+                return
+        print(" No se encontró un producto con ese ID.")
+
+    def eliminar_producto(self, id_p):
+        for p in self.productos:
+            if p.id == id_p:
+                self.productos.remove(p)
+                print(f" Producto con ID {id_p} eliminado.")
+                return
+        print(" Error: ID no encontrado.")
+
+    def buscar_producto(self, nombre):
+        # Búsqueda por coincidencia parcial (Case-insensitive)
+        resultados = [p for p in self.productos if nombre.lower() in p.nombre.lower()]
+        if resultados:
+            print(f"\n Resultados para '{nombre}':")
+            for r in resultados: print(r)
+        else:
+            print(f" No hay coincidencias para '{nombre}'.")
+
+
+
+# INTERFAZ DE CONSOLA (MENÚ)
+
+def ejecutar_menu():
+    mi_tienda = Inventario()
+    
+    while True:
+        print("\n--- MENU DE GESTIÓN ---")
+        print("1. Agregar Producto")
+        print("2. Ver Inventario")
+        print("3. Actualizar Producto")
+        print("4. Eliminar Producto")
+        print("5. Buscar Producto")
+        print("6. Salir")
+        
+        opcion = input("Elija una opción: ")
+
+        try:
+            if opcion == "1":
+                id_p = int(input("Ingrese ID (Numérico): "))
+                nom = input("Nombre del producto: ")
+                cant = int(input("Cantidad inicial: "))
+                pre = float(input("Precio: "))
+                mi_tienda.añadir_producto(id_p, nom, cant, pre)
+
+            elif opcion == "2":
+                mi_tienda.mostrar_todo()
+
+            elif opcion == "3":
+                id_p = int(input("ID del producto a modificar: "))
+                mi_tienda.actualizar_producto(id_p)
+
+            elif opcion == "4":
+                id_p = int(input("ID del producto a borrar: "))
+                mi_tienda.eliminar_producto(id_p)
+
+            elif opcion == "5":
+                nom = input("Escriba el nombre a buscar: ")
+                mi_tienda.buscar_producto(nom)
+
+            elif opcion == "6":
+                print("Saliendo del sistema... ¡Buen día!")
+                break
+            else:
+                print("Opcion no válida, intente de nuevo.")
+        
+        except ValueError:
+            print("\n ERROR: Entrada de datos inválida. Use números donde se requiera.")
+
+# Punto de entrada del script
+if __name__ == "__main__":
+    ejecutar_menu()

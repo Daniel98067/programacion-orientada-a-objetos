@@ -1,0 +1,128 @@
+import json
+import os
+
+# --- CLASE PRODUCTO ---
+class Producto:
+    def __init__(self, id_producto, nombre, cantidad, precio):
+        self.__id = id_producto
+        self.__nombre = nombre
+        self.__cantidad = cantidad
+        self.__precio = precio
+
+    def get_id(self): return self.__id
+    def get_nombre(self): return self.__nombre
+    def get_cantidad(self): return self.__cantidad
+    def get_precio(self): return self.__precio
+
+    def set_cantidad(self, cantidad): self.__cantidad = cantidad
+    def set_precio(self, precio): self.__precio = precio
+
+    def to_dict(self):
+        return {"id": self.__id, "nombre": self.__nombre, "cantidad": self.__cantidad, "precio": self.__precio}
+
+# --- CLASE INVENTARIO ---
+class Inventario:
+    def __init__(self):
+        self.productos = {}
+        self.archivo = "inventario.json"
+        self.cargar_o_crear_inventario()
+
+    def añadir_producto(self, producto):
+        if producto.get_id() in self.productos:
+            print(f"\n[!] El ID {producto.get_id()} ya existe.")
+        else:
+            self.productos[producto.get_id()] = producto
+            self.guardar_en_archivo()
+
+    def eliminar_producto(self, id_producto):
+        if id_producto in self.productos:
+            del self.productos[id_producto]
+            self.guardar_en_archivo()
+            print("\n[-] Producto eliminado.")
+        else:
+            print("\n[!] ID no encontrado.")
+
+    def actualizar_producto(self, id_producto, cantidad=None, precio=None):
+        if id_producto in self.productos:
+            if cantidad is not None: self.productos[id_producto].set_cantidad(cantidad)
+            if precio is not None: self.productos[id_producto].set_precio(precio)
+            self.guardar_en_archivo()
+            print("\n[*] Actualización exitosa.")
+        else:
+            print("\n[!] Producto no encontrado.")
+
+    def buscar_por_nombre(self, nombre):
+        return [p for p in self.productos.values() if nombre.lower() in p.get_nombre().lower()]
+
+    def obtener_todos(self):
+        return list(self.productos.values())
+
+    # --- PERSISTENCIA Y PRECARGA ---
+    def guardar_en_archivo(self):
+        with open(self.archivo, 'w', encoding='utf-8') as f:
+            data = {idx: p.to_dict() for idx, p in self.productos.items()}
+            json.dump(data, f, indent=4)
+
+    def cargar_o_crear_inventario(self):
+        if os.path.exists(self.archivo):
+            with open(self.archivo, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                for item in data.values():
+                    p = Producto(item['id'], item['nombre'], item['cantidad'], item['precio'])
+                    self.productos[p.get_id()] = p
+        else:
+            # CREACIÓN DE INVENTARIO INICIAL SI EL ARCHIVO NO EXISTE
+            print("--- Generando inventario inicial de prueba ---")
+            demo_items = [
+                Producto("A101", "Laptop Pro 14", 15, 1200.50),
+                Producto("A102", "Mouse Ergonómico", 50, 25.00),
+                Producto("A103", "Monitor 4K 27'", 10, 350.99),
+                Producto("A104", "Teclado Mecánico", 20, 85.00),
+                Producto("A105", "Cable HDMI 2m", 100, 12.50)
+            ]
+            for p in demo_items:
+                self.productos[p.get_id()] = p
+            self.guardar_en_archivo()
+
+# --- INTERFAZ ---
+def ejecutar_menu():
+    inv = Inventario()
+    while True:
+        print("\n" + "="*40)
+        print("   GESTIÓN DE INVENTARIO (CON DATOS)")
+        print("="*40)
+        print("1. Añadir | 2. Eliminar | 3. Actualizar")
+        print("4. Buscar | 5. Mostrar Todo | 6. Salir")
+        
+        opcion = input("\nSeleccione: ")
+
+        if opcion == "1":
+            id_p = input("ID: "); nom = input("Nombre: ")
+            cant = int(input("Cant: ")); prec = float(input("Precio: "))
+            inv.añadir_producto(Producto(id_p, nom, cant, prec))
+        
+        elif opcion == "2":
+            inv.eliminar_producto(input("ID a eliminar: "))
+
+        elif opcion == "3":
+            id_p = input("ID a editar: ")
+            c = input("Nueva cantidad (vacío=omitir): ")
+            p = input("Nuevo precio (vacío=omitir): ")
+            inv.actualizar_producto(id_p, int(c) if c else None, float(p) if p else None)
+
+        elif opcion == "4":
+            nom = input("Nombre a buscar: ")
+            for r in inv.buscar_por_nombre(nom):
+                print(f"[{r.get_id()}] {r.get_nombre()} - Stock: {r.get_cantidad()} - ${r.get_precio()}")
+
+        elif opcion == "5":
+            print(f"\n{'ID':<8} | {'Producto':<20} | {'Stock':<6} | {'Precio':<8}")
+            print("-" * 50)
+            for r in inv.obtener_todos():
+                print(f"{r.get_id():<8} | {r.get_nombre():<20} | {r.get_cantidad():<6} | ${r.get_precio():<8.2f}")
+
+        elif opcion == "6":
+            break
+
+if __name__ == "__main__":
+    ejecutar_menu()

@@ -1,0 +1,151 @@
+class Libro:
+    def __init__(self, titulo, autor, categoria, isbn):
+        # Tupla para atributos inmutables
+        self.datos_inmutables = (titulo, autor)
+        self.categoria = categoria
+        self.isbn = isbn
+
+    def __str__(self):
+        return f"[ISBN: {self.isbn}] {self.datos_inmutables[0]} - {self.datos_inmutables[1]} ({self.categoria})"
+
+class Usuario:
+    def __init__(self, nombre, user_id):
+        self.nombre = nombre
+        self.user_id = user_id
+        # Lista para gestionar los libros prestados
+        self.libros_prestados = []
+
+    def __str__(self):
+        cantidad = len(self.libros_prestados)
+        return f"Cliente: {self.nombre} (ID: {self.user_id}) - Libros en posesion: {cantidad}"
+
+class Biblioteca:
+    def __init__(self):
+        self.libros = {} # Diccionario para libros
+        self.usuarios = {} # Diccionario para usuarios
+        self.ids_unicos = set() # Conjunto para IDs
+
+    def añadir_libro(self):
+        titulo = input("Titulo: ")
+        autor = input("Autor: ")
+        cat = input("Categoria: ")
+        isbn = input("ISBN: ")
+        if isbn not in self.libros:
+            self.libros[isbn] = Libro(titulo, autor, cat, isbn)
+            print("Resultado: Libro añadido con exito.")
+        else:
+            print("Error: El ISBN ya existe.")
+
+    def quitar_libro(self):
+        isbn = input("ISBN del libro a eliminar: ")
+        if isbn in self.libros:
+            del self.libros[isbn]
+            print("Resultado: Libro eliminado.")
+        else:
+            print("Error: No se encontro el libro.")
+
+    def registrar_usuario(self):
+        id_u = input("ID de Usuario: ")
+        if id_u not in self.ids_unicos:
+            nombre = input("Nombre completo: ")
+            nuevo_usuario = Usuario(nombre, id_u)
+            self.usuarios[id_u] = nuevo_usuario
+            self.ids_unicos.add(id_u)
+            print(f"Resultado: Usuario {nombre} registrado.")
+        else:
+            print("Error: Este ID ya esta registrado.")
+
+    def dar_de_baja_usuario(self):
+        id_u = input("ID del usuario a eliminar: ")
+        if id_u in self.usuarios:
+            if not self.usuarios[id_u].libros_prestados:
+                del self.usuarios[id_u]
+                self.ids_unicos.remove(id_u)
+                print("Resultado: Usuario dado de baja.")
+            else:
+                print("Error: El usuario aun tiene libros prestados.")
+        else:
+            print("Error: Usuario no encontrado.")
+
+    def prestar_libro(self):
+        id_u = input("ID del Usuario: ")
+        isbn = input("ISBN del Libro: ")
+        if id_u in self.usuarios and isbn in self.libros:
+            libro = self.libros.pop(isbn)
+            self.usuarios[id_u].libros_prestados.append(libro)
+            print(f"Resultado: Libro prestado a {self.usuarios[id_u].nombre}.")
+        else:
+            print("Error: Datos incorrectos o libro no disponible.")
+
+    def devolver_libro(self):
+        id_u = input("ID del Usuario: ")
+        isbn = input("ISBN del Libro a devolver: ")
+        if id_u in self.usuarios:
+            user = self.usuarios[id_u]
+            for libro in user.libros_prestados:
+                if libro.isbn == isbn:
+                    user.libros_prestados.remove(libro)
+                    self.libros[isbn] = libro
+                    print("Resultado: Devolucion exitosa.")
+                    return
+            print("Error: El usuario no tiene ese libro.")
+        else:
+            print("Error: Usuario no registrado.")
+
+    def buscar_libros(self):
+        termino = input("Buscar por titulo, autor o categoria: ").lower()
+        encontrados = [l for l in self.libros.values() if termino in str(l).lower()]
+        print("\n--- Resultados ---")
+        for l in encontrados: print(l)
+        if not encontrados: print("Sin coincidencias.")
+
+    def listar_prestados(self):
+        id_u = input("ID del Usuario: ")
+        if id_u in self.usuarios:
+            print(f"\nLibros de {self.usuarios[id_u].nombre}:")
+            for l in self.usuarios[id_u].libros_prestados:
+                print(f"- {l.datos_inmutables[0]} (ISBN: {l.isbn})")
+        else:
+            print("Error: Usuario no encontrado.")
+
+    # NUEVAS SECCIONES SOLICITADAS
+    def ver_todos_los_libros(self):
+        print("\n--- INVENTARIO TOTAL DE LIBROS DISPONIBLES ---")
+        if not self.libros:
+            print("No hay libros en el inventario.")
+        for libro in self.libros.values():
+            print(libro)
+
+    def ver_todos_los_usuarios(self):
+        print("\n--- LISTA DE CLIENTES REGISTRADOS ---")
+        if not self.usuarios:
+            print("No hay usuarios registrados.")
+        for usuario in self.usuarios.values():
+            print(usuario)
+
+# --- MENU PRINCIPAL ---
+biblioteca = Biblioteca()
+
+while True:
+    print("\nSISTEMA DE GESTION DE BIBLIOTECA")
+    print("1. Añadir Libro           6. Registrar Usuario")
+    print("2. Quitar Libro           7. Dar de baja Usuario")
+    print("3. Prestar Libro          8. Devolver Libro")
+    print("4. Buscar Libro           9. VER TODOS LOS LIBROS")
+    print("5. Listar Prestados (ID)  10. VER TODOS LOS CLIENTES")
+    print("11. Salir")
+    
+    opcion = input("\nSeleccione una opcion: ")
+
+    if opcion == "1": biblioteca.añadir_libro()
+    elif opcion == "2": biblioteca.quitar_libro()
+    elif opcion == "3": biblioteca.prestar_libro()
+    elif opcion == "4": biblioteca.buscar_libros()
+    elif opcion == "5": biblioteca.listar_prestados()
+    elif opcion == "6": biblioteca.registrar_usuario()
+    elif opcion == "7": biblioteca.dar_de_baja_usuario()
+    elif opcion == "8": biblioteca.devolver_libro()
+    elif opcion == "9": biblioteca.ver_todos_los_libros()
+    elif opcion == "10": biblioteca.ver_todos_los_usuarios()
+    elif opcion == "11": break
+    else: print("Error: Opcion invalida.")

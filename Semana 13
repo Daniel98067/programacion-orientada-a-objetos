@@ -1,0 +1,73 @@
+import tkinter as tk
+from tkinter import messagebox
+import os
+
+class RegistroEvidenciasApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Sistema de Registro de Indicios - Criminalística")
+        self.root.geometry("400x470")
+        
+        # Nombre del archivo donde se guardarán los datos
+        self.archivo_datos = "evidencias_registradas.txt"
+
+        # --- Componentes GUI ---
+        self.label_titulo = tk.Label(root, text="Registro Permanente de Indicios", font=("Arial", 12, "bold"))
+        self.label_titulo.pack(pady=10)
+
+        self.entry_indicio = tk.Entry(root, width=35)
+        self.entry_indicio.pack(pady=5)
+
+        self.frame_botones = tk.Frame(root)
+        self.frame_botones.pack(pady=10)
+
+        self.btn_agregar = tk.Button(self.frame_botones, text="Agregar", command=self.agregar_indicio, bg="#4CAF50", fg="white", width=10)
+        self.btn_agregar.grid(row=0, column=0, padx=5)
+
+        self.btn_limpiar = tk.Button(self.frame_botones, text="Limpiar Todo", command=self.limpiar_todo, bg="#f44336", fg="white", width=10)
+        self.btn_limpiar.grid(row=0, column=1, padx=5)
+
+        self.lista_evidencias = tk.Listbox(root, width=40, height=12)
+        self.lista_evidencias.pack(pady=5, padx=20)
+
+        # Cargar datos existentes al iniciar
+        self.cargar_datos_iniciales()
+
+    # --- Lógica de Persistencia ---
+
+    def cargar_datos_iniciales(self):
+        """Lee el archivo .txt y llena la lista al arrancar el programa."""
+        if os.path.exists(self.archivo_datos):
+            with open(self.archivo_datos, "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    self.lista_evidencias.insert(tk.END, linea.strip())
+
+    def agregar_indicio(self):
+        """Guarda en la lista y escribe en el archivo de texto."""
+        dato = self.entry_indicio.get().strip()
+        if dato:
+            formato_dato = f"• {dato}"
+            # 1. Actualizar Interfaz
+            self.lista_evidencias.insert(tk.END, formato_dato)
+            self.entry_indicio.delete(0, tk.END)
+            
+            # 2. Guardar en Archivo (Modo 'a' de append/añadir)
+            with open(self.archivo_datos, "a", encoding="utf-8") as archivo:
+                archivo.write(formato_dato + "\n")
+        else:
+            messagebox.showwarning("Atención", "El campo está vacío.")
+
+    def limpiar_todo(self):
+        """Borra la lista visual y elimina el archivo físico."""
+        if messagebox.askyesno("Confirmar", "¿Desea eliminar todos los registros permanentemente?"):
+            # Borrar visualmente
+            self.lista_evidencias.delete(0, tk.END)
+            # Borrar el archivo si existe
+            if os.path.exists(self.archivo_datos):
+                os.remove(self.archivo_datos)
+            messagebox.showinfo("Éxito", "Registros eliminados correctamente.")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = RegistroEvidenciasApp(root)
+    root.mainloop()

@@ -1,0 +1,98 @@
+import tkinter as tk
+from tkinter import messagebox
+import json
+import os
+
+class TodoApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Gestor de Tareas con Persistencia")
+        self.root.geometry("400x500")
+        self.archivo_datos = "tareas.json"
+
+        # --- Interfaz ---
+        self.task_entry = tk.Entry(root, font=("Arial", 14))
+        self.task_entry.pack(pady=10, padx=10, fill=tk.X)
+        self.task_entry.focus_set()
+
+        btn_frame = tk.Frame(root)
+        btn_frame.pack(pady=5)
+
+        tk.Button(btn_frame, text="Añadir (Enter)", command=self.add_task, bg="#4caf50", fg="white").grid(row=0, column=0, padx=5)
+        tk.Button(btn_frame, text="Completar (C)", command=self.complete_task, bg="#2196f3", fg="white").grid(row=0, column=1, padx=5)
+        
+        # Cambio visual en el botón
+        tk.Button(btn_frame, text="Eliminar (Supr)", command=self.delete_task, bg="#f44336", fg="white").grid(row=0, column=2, padx=5)
+
+        self.tasks_listbox = tk.Listbox(root, font=("Arial", 12), selectmode=tk.SINGLE, height=15)
+        self.tasks_listbox.pack(pady=10, padx=10, fill=tk.BOTH, expand=True)
+
+        # --- Atajos de Teclado Actualizados ---
+        self.task_entry.bind('<Return>', lambda e: self.add_task())
+        self.root.bind('<c>', lambda e: self.complete_task())
+        self.root.bind('<C>', lambda e: self.complete_task())
+        
+        # Ahora escucha específicamente la tecla Suprimir (Delete)
+        self.root.bind('<Delete>', lambda e: self.delete_task())
+        
+        self.root.bind('<Escape>', lambda e: self.on_closing())
+
+        self.cargar_tareas()
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def add_task(self):
+        task = self.task_entry.get()
+        if task.strip():
+            self.tasks_listbox.insert(tk.END, task)
+            self.task_entry.delete(0, tk.END)
+
+    def complete_task(self, event=None): # Añadido event=None por si acaso
+        try:
+            index = self.tasks_listbox.curselection()[0]
+            task = self.tasks_listbox.get(index)
+            if not task.startswith("✔ "):
+                self.tasks_listbox.delete(index)
+                self.tasks_listbox.insert(index, f"✔ {task}")
+                self.tasks_listbox.itemconfig(index, fg="gray", bg="#e8f5e9")
+        except IndexError:
+            pass
+
+    def delete_task(self, event=None):
+        try:
+            index = self.tasks_listbox.curselection()[0]
+            self.tasks_listbox.delete(index)
+        except IndexError:
+            pass
+
+    # --- Persistencia ---
+    def guardar_tareas(self):
+        tareas = []
+        for i in range(self.tasks_listbox.size()):
+            texto = self.tasks_listbox.get(i)
+            completada = texto.startswith("✔ ")
+            tareas.append({"texto": texto, "completada": completada})
+        
+        with open(self.archivo_datos, "w", encoding="utf-8") as f:
+            json.dump(tareas, f, ensure_ascii=False, indent=4)
+
+    def cargar_tareas(self):
+        if os.path.exists(self.archivo_datos):
+            try:
+                with open(self.archivo_datos, "r", encoding="utf-8") as f:
+                    tareas = json.load(f)
+                    for tarea in tareas:
+                        self.tasks_listbox.insert(tk.END, tarea["texto"])
+                        if tarea["completada"]:
+                            idx = self.tasks_listbox.size() - 1
+                            self.tasks_listbox.itemconfig(idx, fg="gray", bg="#e8f5e9")
+            except Exception as e:
+                print(f"Error: {e}")
+
+    def on_closing(self):
+        self.guardar_tareas()
+        self.root.destroy()
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = TodoApp(root)
+    root.mainloop()
